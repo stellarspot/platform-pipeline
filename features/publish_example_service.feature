@@ -1,15 +1,15 @@
 Feature: Publish example service
 
-    Background: Run all services
-		Given Ethereum network is running on port 8545
-		Given Contracts are deployed using Truffle
-		Given IPFS is running with API port 5002 and Gateway port 8081
-		Given Identity is created with user "snet-user" and private key "0xc71478a6d0fe44e763649de0a0deb5a080b788eefbbcf9c6f7aef0dd5dbd67e0"
-		Given snet is configured with Ethereum RPC endpoint 8545
-		Given snet is configured with IPFS endpoint 5002
-		Given Organization is added:
-			| organization        |
-			| ExampleOrganization |
+    # Background: Run all services
+	# 	Given Ethereum network is running on port 8545
+	# 	Given Contracts are deployed using Truffle
+	# 	Given IPFS is running with API port 5002 and Gateway port 8081
+	# 	Given Identity is created with user "snet-user" and private key "0xc71478a6d0fe44e763649de0a0deb5a080b788eefbbcf9c6f7aef0dd5dbd67e0"
+	# 	Given snet is configured with Ethereum RPC endpoint 8545
+	# 	Given snet is configured with IPFS endpoint 5002
+	# 	Given Organization is added:
+	# 		| organization        |
+	# 		| ExampleOrganization |
 
 	# Scenario: Publish example service
 	# 	When  example-service is registered
@@ -25,3 +25,6 @@ Feature: Publish example service
 
 	Scenario: Publish dnn-model-services
 		When  dnn-model-services is running
+		When  snet-daemon is started with dnn-model-services
+            | daemon port | ethereum endpoint port | passthrough endpoint port |
+            | 8081        | 8545                   | 7003                      |

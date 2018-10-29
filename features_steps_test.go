@@ -11,6 +11,7 @@ import (
 
 var outputFile string
 var outputContainsStrings []string
+var outputSkipErrors []string
 
 var platformContractsDir string
 var exampleServiceDir string
@@ -291,13 +292,16 @@ func FeatureContext(s *godog.Suite) {
 
 	// dnn-model-services sample
 	s.Step(`^dnn-model-services is running$`, dnnmodelservicesIsRunning)
-
+	s.Step(`^snet-daemon is started with dnn-model-services$`, snetdaemonIsStartedWithDnnmodelservices)
 }
 
 func checkFileContainsStrings() (bool, error) {
 
 	log.Printf("check output file: '%s'\n", outputFile)
 	log.Printf("check output file contains string: '%s'\n", strings.Join(outputContainsStrings, ","))
+	if len(outputSkipErrors) > 0 {
+		log.Printf("check output with skipped errors: '%s'\n", strings.Join(outputSkipErrors, ","))
+	}
 
 	out, err := readFile(outputFile)
 	if err != nil {
@@ -309,7 +313,17 @@ func checkFileContainsStrings() (bool, error) {
 	}
 
 	if strings.Contains(out, "Error") {
-		return false, errors.New("Output contains error")
+		skip := false
+		for _, skipErr := range outputSkipErrors {
+			if strings.Contains(out, skipErr) {
+				log.Printf("skipp error: '%s'\n", skipErr)
+				skip = true
+				break
+			}
+		}
+		if !skip {
+			return false, errors.New("Output contains error")
+		}
 	}
 
 	for _, str := range outputContainsStrings {
