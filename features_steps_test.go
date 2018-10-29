@@ -308,6 +308,8 @@ func checkFileContainsStrings() (bool, error) {
 		return false, err
 	}
 
+	log.Printf("check log file:\n--- '%s' ---\n%s\n---------\n", outputFile, out)
+
 	if out != "" {
 		log.Printf("Output: %s\n", out)
 	}
