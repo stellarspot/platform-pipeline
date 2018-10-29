@@ -11,15 +11,17 @@ Feature: Publish example service
 			| organization        |
 			| ExampleOrganization |
 
+	# Scenario: Publish example service
+	# 	When  example-service is registered
+	# 		| name                | price | endpoint              | tags            | description     |
+	# 		| ExampleOrganization | 1     | http://localhost:8080 | example service | Example service |
+	# 	When  example-service is published to network
+	# 	When example-service is run with snet-daemon
+	# 		| daemon port | ethereum endpoint port | passthrough endpoint port |
+	# 		| 8080        | 8545                   | 5001                      |
+	# 	Then SingularityNET job is created
+	# 		| max price |
+	# 		| 100000000 |
 
-	Scenario: Publish example service
-		When  example-service is registered
-			| name                | price | endpoint              | tags            | description     |
-			| ExampleOrganization | 1     | http://localhost:8080 | example service | Example service |
-		When  example-service is published to network
-		When example-service is run with snet-daemon
-			| daemon port | ethereum endpoint port | passthrough endpoint port |
-			| 8080        | 8545                   | 5001                      |
-		Then SingularityNET job is created
-			| max price |
-			| 100000000 |
+	Scenario: Publish dnn-model-services
+		When  dnn-model-services is running

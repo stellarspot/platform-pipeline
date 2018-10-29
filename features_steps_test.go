@@ -14,6 +14,7 @@ var outputContainsStrings []string
 
 var platformContractsDir string
 var exampleServiceDir string
+var dnnModelServicesDir string
 var snetConfigFile string
 
 var accountPrivateKey string
@@ -26,6 +27,7 @@ var agentAddress string
 func init() {
 	platformContractsDir = envSingnetRepos + "/platform-contracts"
 	exampleServiceDir = envSingnetRepos + "/example-service"
+	dnnModelServicesDir = envSingnetRepos + "/dnn-model-services"
 	snetConfigFile = envHome + "/.snet/config"
 }
 
@@ -270,6 +272,8 @@ func organizationIsAdded(table *gherkin.DataTable) error {
 }
 
 func FeatureContext(s *godog.Suite) {
+
+	// background
 	s.Step(`^Ethereum network is running on port (\d+)$`, ethereumNetworkIsRunningOnPort)
 	s.Step(`^Contracts are deployed using Truffle$`, contractsAreDeployedUsingTruffle)
 	s.Step(`^IPFS is running with API port (\d+) and Gateway port (\d+)$`, ipfsIsRunning)
@@ -278,10 +282,15 @@ func FeatureContext(s *godog.Suite) {
 	s.Step(`^snet is configured with Ethereum RPC endpoint (\d+)$`, snetIsConfiguredWithEthereumRPCEndpoint)
 	s.Step(`^snet is configured with IPFS endpoint (\d+)$`, snetIsConfiguredWithIPFSEndpoint)
 	s.Step(`^Organization is added:$`, organizationIsAdded)
+
+	// example-service sample
 	s.Step(`^example-service is registered$`, exampleserviceIsRegistered)
 	s.Step(`^example-service is published to network$`, exampleserviceIsPublishedToNetwork)
 	s.Step(`^example-service is run with snet-daemon$`, exampleserviceIsRunWithSnetdaemon)
 	s.Step(`^SingularityNET job is created$`, singularityNETJobIsCreated)
+
+	// dnn-model-services sample
+	s.Step(`^dnn-model-services is running$`, dnnmodelservicesIsRunning)
 
 }
 
