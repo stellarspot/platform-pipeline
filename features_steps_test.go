@@ -312,17 +312,19 @@ func checkFileContainsStrings() (bool, error) {
 		log.Printf("Output: %s\n", out)
 	}
 
-	if strings.Contains(out, "Error") {
-		skip := false
-		for _, skipErr := range outputSkipErrors {
-			if strings.Contains(out, skipErr) {
-				log.Printf("skipp error: '%s'\n", skipErr)
-				skip = true
-				break
+	for _, line := range strings.Split(out, "\n") {
+		if strings.Contains(strings.ToLower(line), "error") {
+			skip := false
+			for _, skipErr := range outputSkipErrors {
+				if strings.Contains(out, skipErr) {
+					log.Printf("skipp error: '%s'\n", skipErr)
+					skip = true
+					break
+				}
 			}
-		}
-		if !skip {
-			return false, errors.New("Output contains error")
+			if !skip {
+				return false, errors.New("Output contains error: '" + line + "'")
+			}
 		}
 	}
 
