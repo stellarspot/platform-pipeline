@@ -96,10 +96,6 @@ jobs:
         command: |
           export PATH=$PATH:$GOPATH/bin
           cd $SINGNET_REPOS
-          git clone https://github.com/singnet/dnn-model-services.git
-          cd dnn-model-services
-          wget https://patch-diff.githubusercontent.com/raw/singnet/dnn-model-services/pull/20.diff
-          git apply 20.diff
     - run:
         name: Run integration tests
         command: |

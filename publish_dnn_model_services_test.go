@@ -17,6 +17,7 @@ func snetdaemonConfigFileIsCreated(table *gherkin.DataTable) (err error) {
 
 	dir := dnnModelServicesDir + "/" + grpcBasicTemplateDir
 
+	agentAddress = "0x3b07411493C72c5aEC01b6Cf3cd0981cF0586fA7"
 	daemonPort := getTableValue(table, "daemon port")
 	ethereumEndpointPort := getTableValue(table, "ethereum endpoint port")
 	passthroughEndpointPort := getTableValue(table, "passthrough endpoint port")
