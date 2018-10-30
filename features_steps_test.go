@@ -291,8 +291,8 @@ func FeatureContext(s *godog.Suite) {
 	s.Step(`^SingularityNET job is created$`, singularityNETJobIsCreated)
 
 	// dnn-model-services sample
+	s.Step(`^snet-daemon config file is created$`, snetdaemonConfigFileIsCreated)
 	s.Step(`^dnn-model-services is running$`, dnnmodelservicesIsRunning)
-	s.Step(`^snet-daemon is started with dnn-model-services$`, snetdaemonIsStartedWithDnnmodelservices)
 }
 
 func checkFileContainsStrings() (bool, error) {

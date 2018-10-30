@@ -24,7 +24,7 @@ Feature: Publish example service
 	# 		| 100000000 |
 
 	Scenario: Publish dnn-model-services
-		When  dnn-model-services is running
-		When  snet-daemon is started with dnn-model-services
+		When  snet-daemon config file is created
             | daemon port | ethereum endpoint port | passthrough endpoint port |
-            | 8081        | 8545                   | 7003                      |
+            | 8080        | 8545                   | 7003                      |
+		When  dnn-model-services is running
