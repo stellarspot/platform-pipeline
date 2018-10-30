@@ -44,7 +44,7 @@ func snetdaemonConfigFileIsCreated(table *gherkin.DataTable) (err error) {
 		agentAddress, accountPrivateKey, daemonPort, ethereumEndpointPort, passthroughEndpointPort)
 
 	file := fmt.Sprintf("%s/snetd_%s_config.json", dir, serviceName)
-	log.Printf("create snetd config: %s\n---\n:%s\n---\n", file, outputFile)
+	log.Printf("create snetd config: %s\n---\n:%s\n---\n", file, snetdConfig)
 
 	err = writeToFile(file, snetdConfig)
 
