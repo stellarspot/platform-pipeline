@@ -30,4 +30,6 @@ func FeatureContext(s *godog.Suite) {
 	s.Step(`^dnn-model service is running$`, dnnmodelServiceIsRunning)
 	s.Step(`^dnn-model open the payment channel$`, dnnmodelOpenThePaymentChannel)
 	s.Step(`^dnn-model compile protobuf$`, dnnmodelCompileProtobuf)
+	s.Step(`^dnn-model make a call using stateless logic$`, dnnmodelMakeACallUsingStatelessLogic)
+
 }

@@ -37,3 +37,4 @@ Feature: Publish example service
 		When  dnn-model service is running
 		When dnn-model open the payment channel
 		When dnn-model compile protobuf
+		When dnn-model make a call using stateless logic

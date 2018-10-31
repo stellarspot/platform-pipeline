@@ -311,10 +311,6 @@ func dnnmodelCompileProtobuf() (err error) {
 	// mpe-client compile_from_file $SINGNET_REPOS
 	// dnn-model-services/Services/gRPC/Basic_Template/service/service_spec/ basic_tamplate_rpc.proto 0
 
-	// command: 'snet',
-	// args: 'mpe-client, compile_from_file, /root/singnet/src/github.com/singnet,
-	// dnn-model-services/Services/gRPC/Basic_Template/service/service_spec, basic_tamplate_rpc.proto, 0'
-
 	command := ExecCommand{
 		Command:   "snet",
 		Directory: dnnModelServicesDir,
@@ -324,6 +320,50 @@ func dnnmodelCompileProtobuf() (err error) {
 			envSingnetRepos + "/dnn-model-services/Services/gRPC/Basic_Template/service/service_spec",
 			"basic_tamplate_rpc.proto",
 			"0",
+		},
+	}
+
+	err = runCommand(command)
+
+	return
+}
+
+func dnnmodelMakeACallUsingStatelessLogic() (err error) {
+
+	// # take the list of channels from blockchain (from events!)
+	// snet mpe-client print_my_channels 0x5c7a4290f6f8ff64c69eeffdfafc8644a4ec3a4e
+
+	outputFile = "output.txt"
+	outputContainsStrings = []string{"organizationAddress", "420000"}
+	outputSkipErrors = []string{}
+
+	command := ExecCommand{
+		Command:   "snet",
+		Directory: dnnModelServicesDir,
+		Args: []string{
+			"mpe-client",
+			"print_my_channels", multiPartyEscrow,
+		},
+		OutputFile: outputFile,
+	}
+
+	err = runCommand(command)
+
+	ok, err := checkFileContainsStrings()
+
+	if err != nil || !ok {
+		return
+	}
+
+	//snet  mpe-client call_server 0x5c7a4290f6f8ff64c69eeffdfafc8644a4ec3a4e 0 10 localhost:8080 "Addition" add '{"a":10,"b":32}'
+
+	command = ExecCommand{
+		Command:   "snet",
+		Directory: dnnModelServicesDir,
+		Args: []string{
+			"mpe-client",
+			"call_server", multiPartyEscrow,
+			"0", "10", "localhost:8090", `"Addition"`, "add", `'{"a":10,"b":32}`,
 		},
 	}
 
