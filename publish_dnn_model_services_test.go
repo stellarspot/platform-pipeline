@@ -282,7 +282,6 @@ func dnnmodelOpenThePaymentChannel() (err error) {
 		return
 	}
 
-	log.Println("expiration: ", expiration)
 	expiration += 1200
 
 	// snet contract MultiPartyEscrow --at 0x5c7a4290f6f8ff64c69eeffdfafc8644a4ec3a4e openChannel  0x3b2b3C2e2E7C93db335E69D827F3CC4bC2A2A2cB
@@ -299,6 +298,36 @@ func dnnmodelOpenThePaymentChannel() (err error) {
 			"-y",
 		},
 	}
+
+	err = runCommand(command)
+
+	return
+}
+
+func dnnmodelCompileProtobuf() (err error) {
+
+	// # compile protobuf for payment channel 0
+	// snet
+	// mpe-client compile_from_file $SINGNET_REPOS
+	// dnn-model-services/Services/gRPC/Basic_Template/service/service_spec/ basic_tamplate_rpc.proto 0
+
+	// command: 'snet',
+	// args: 'mpe-client, compile_from_file, /root/singnet/src/github.com/singnet,
+	// dnn-model-services/Services/gRPC/Basic_Template/service/service_spec, basic_tamplate_rpc.proto, 0'
+
+	command := ExecCommand{
+		Command:   "snet",
+		Directory: dnnModelServicesDir,
+		Args: []string{
+			"mpe-client",
+			"compile_from_file",
+			envSingnetRepos + "/dnn-model-services/Services/gRPC/Basic_Template/service/service_spec",
+			"basic_tamplate_rpc.proto",
+			"0",
+		},
+	}
+
+	err = runCommand(command)
 
 	return
 }

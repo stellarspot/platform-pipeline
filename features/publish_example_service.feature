@@ -36,3 +36,4 @@ Feature: Publish example service
             | 8090        | 8545                   | 7003                      | 10    |
 		When  dnn-model service is running
 		When dnn-model open the payment channel
+		When dnn-model compile protobuf
