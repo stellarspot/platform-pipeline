@@ -28,4 +28,5 @@ func FeatureContext(s *godog.Suite) {
 	s.Step(`^dnn-model mpe service is registered$`, dnnmodelMpeServiceIsRegistered)
 	s.Step(`^dnn-model service snet-daemon config file is created$`, dnnmodelServiceSnetdaemonConfigFileIsCreated)
 	s.Step(`^dnn-model service is running$`, dnnmodelServiceIsRunning)
+	s.Step(`^dnn-model open the payment channel$`, dnnmodelOpenThePaymentChannel)
 }

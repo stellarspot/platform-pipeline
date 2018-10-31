@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
+	"strings"
 
 	"github.com/DATA-DOG/godog/gherkin"
 )
@@ -205,6 +207,98 @@ func dnnmodelServiceIsRunning() (err error) {
 	}
 
 	_, err = checkWithTimeout(5000, 500, checkFileContainsStrings)
+
+	return
+}
+
+func dnnmodelOpenThePaymentChannel() (err error) {
+
+	// # deposit 1000000 cogs to MPE from the first address (0x592E3C0f3B038A0D673F19a18a773F993d4b2610)
+	// snet contract SingularityNetToken --at 0x6e5f20669177f5bdf3703ec5ea9c4d4fe3aabd14 approve 0x5c7a4290f6f8ff64c69eeffdfafc8644a4ec3a4e 1000000 --transact -y
+
+	command := ExecCommand{
+		Command:   "snet",
+		Directory: dnnModelServicesDir,
+		Args: []string{
+			"contract",
+			"SingularityNetToken", "--at", singnetTokenAddress,
+			"approve", multiPartyEscrow, "1000000",
+			"--transact",
+			"-y",
+		},
+	}
+
+	err = runCommand(command)
+
+	if err != nil {
+		return
+	}
+
+	// snet contract MultiPartyEscrow --at 0x5c7a4290f6f8ff64c69eeffdfafc8644a4ec3a4e    1000000 --transact -y
+	command = ExecCommand{
+		Command:   "snet",
+		Directory: dnnModelServicesDir,
+		Args: []string{
+			"contract",
+			"MultiPartyEscrow", "--at", multiPartyEscrow,
+			"deposit", "1000000",
+			"--transact",
+			"-y",
+		},
+	}
+
+	err = runCommand(command)
+
+	if err != nil {
+		return
+	}
+
+	// # We set expiration +12000 blocks in the future (~48 hours with 15 second per block)
+
+	output := "expiration.txt"
+
+	command = ExecCommand{
+		Command:    "snet",
+		Directory:  dnnModelServicesDir,
+		Args:       []string{"mpe-client", "block_number"},
+		OutputFile: output,
+	}
+
+	err = runCommand(command)
+
+	if err != nil {
+		return
+	}
+
+	// EXPIRATION=$((`snet mpe-client block_number` + 12000))
+	expirationText, err := readFile(output)
+	if err != nil {
+		return
+	}
+
+	expiration, err := strconv.Atoi(strings.TrimSpace(expirationText))
+
+	if err != nil {
+		return
+	}
+
+	log.Println("expiration: ", expiration)
+	expiration += 1200
+
+	// snet contract MultiPartyEscrow --at 0x5c7a4290f6f8ff64c69eeffdfafc8644a4ec3a4e openChannel  0x3b2b3C2e2E7C93db335E69D827F3CC4bC2A2A2cB
+	// 420000 $EXPIRATION 0 --transact -y
+	command = ExecCommand{
+		Command:   "snet",
+		Directory: dnnModelServicesDir,
+		Args: []string{
+			"contract",
+			"MultiPartyEscrow", "--at", multiPartyEscrow,
+			"openChannel", organizationAddress,
+			"420000", strconv.Itoa(expiration), "0",
+			"--transact",
+			"-y",
+		},
+	}
 
 	return
 }

@@ -35,3 +35,4 @@ Feature: Publish example service
             | daemon port | ethereum endpoint port | passthrough endpoint port | price |
             | 8090        | 8545                   | 7003                      | 10    |
 		When  dnn-model service is running
+		When dnn-model open the payment channel

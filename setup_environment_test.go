@@ -14,7 +14,9 @@ var snetConfigFile string
 
 var accountPrivateKey string
 var identiyPrivateKey string
+
 var agentFactoryAddress string
+var singnetTokenAddress string
 var registryAddress string
 var multiPartyEscrow string
 var organizationAddress string
@@ -107,6 +109,11 @@ func contractsAreDeployedUsingTruffle() (err error) {
 	command.Args = []string{"migrate", "--network", "local"}
 	command.OutputFile = output
 	err = runCommand(command)
+
+	singnetTokenAddress, err = getPropertyFromFile(output, "SingularityNetToken:")
+	if err != nil {
+		return
+	}
 
 	registryAddress, err = getPropertyFromFile(output, "Registry:")
 	if err != nil {
