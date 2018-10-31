@@ -24,7 +24,14 @@ Feature: Publish example service
 	# 		| 100000000 |
 
 	Scenario: Publish dnn-model-services
-		When  snet-daemon config file is created
-            | daemon port | ethereum endpoint port | passthrough endpoint port |
-            | 8080        | 8545                   | 7003                      |
-		When  dnn-model-services is running
+		When  dnn-model service is registered
+			| name                | price | endpoint              | tags                | description         |
+			| ExampleOrganization | 1     | http://localhost:8080 | dnn-example service | DNN Example service |
+		When  dnn-model service is published to network
+		When  dnn-model mpe service is registered
+			| name                | endpoint       | group  |
+			| ExampleOrganization | localhost:8080 | group1 |
+		When  dnn-model service snet-daemon config file is created
+            | daemon port | ethereum endpoint port | passthrough endpoint port | price |
+            | 8080        | 8545                   | 7003                      | 10    |
+		When  dnn-model service is running

@@ -3,12 +3,17 @@ package main
 import (
 	"errors"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/DATA-DOG/godog/gherkin"
 )
 
 func exampleserviceIsRegistered(table *gherkin.DataTable) error {
+	return serviceIsRegistered(table)
+}
+
+func serviceIsRegistered(table *gherkin.DataTable) error {
 
 	name := getTableValue(table, "name")
 	price := getTableValue(table, "price")
@@ -27,8 +32,11 @@ func exampleserviceIsRegistered(table *gherkin.DataTable) error {
 }
 
 func exampleserviceIsPublishedToNetwork() error {
+	return serviceIsPublishedToNetwork("./service.json")
+}
 
-	serviceFile := "./service.json"
+func serviceIsPublishedToNetwork(serviceFile string) error {
+
 	args := []string{
 		"service", "publish", "local",
 		"--config", serviceFile,
@@ -52,6 +60,8 @@ func exampleserviceIsPublishedToNetwork() error {
 		exampleServiceDir+"/"+serviceFile,
 		"\"agentAddress\":",
 	)
+
+	log.Println("agentAddress: ", agentAddress)
 
 	if err != nil {
 		return err

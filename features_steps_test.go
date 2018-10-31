@@ -22,13 +22,14 @@ var accountPrivateKey string
 var identiyPrivateKey string
 var agentFactoryAddress string
 var registryAddress string
+var multiPartyEscrow string
 var organizationAddress string
 var agentAddress string
 
 func init() {
 	platformContractsDir = envSingnetRepos + "/platform-contracts"
 	exampleServiceDir = envSingnetRepos + "/example-service"
-	dnnModelServicesDir = envSingnetRepos + "/dnn-model-services"
+	dnnModelServicesDir = envSingnetRepos + "/dnn-model-services/Services/gRPC/Basic_Template"
 	snetConfigFile = envHome + "/.snet/config"
 }
 
@@ -109,6 +110,11 @@ func contractsAreDeployedUsingTruffle() error {
 	}
 
 	agentFactoryAddress, err = getPropertyFromFile(output, "AgentFactory:")
+	if err != nil {
+		return err
+	}
+
+	multiPartyEscrow, err = getPropertyFromFile(output, "MultiPartyEscrow:")
 	if err != nil {
 		return err
 	}
@@ -291,14 +297,15 @@ func FeatureContext(s *godog.Suite) {
 	s.Step(`^SingularityNET job is created$`, singularityNETJobIsCreated)
 
 	// dnn-model-services sample
-	s.Step(`^snet-daemon config file is created$`, snetdaemonConfigFileIsCreated)
-	s.Step(`^dnn-model-services is running$`, dnnmodelservicesIsRunning)
+	s.Step(`^dnn-model service is registered$`, dnnmodelServiceIsRegistered)
+	s.Step(`^dnn-model service is published to network$`, dnnmodelServiceIsPublishedToNetwork)
+	s.Step(`^dnn-model mpe service is registered$`, dnnmodelMpeServiceIsRegistered)
+	s.Step(`^dnn-model service snet-daemon config file is created$`, dnnmodelServiceSnetdaemonConfigFileIsCreated)
+	s.Step(`^dnn-model service is running$`, dnnmodelServiceIsRunning)
 }
 
 func checkFileContainsStrings() (bool, error) {
 
-	log.Printf("check output file: '%s'\n", outputFile)
-	log.Printf("check output file contains string: '%s'\n", strings.Join(outputContainsStrings, ","))
 	if len(outputSkipErrors) > 0 {
 		log.Printf("check output with skipped errors: '%s'\n", strings.Join(outputSkipErrors, ","))
 	}
@@ -307,8 +314,6 @@ func checkFileContainsStrings() (bool, error) {
 	if err != nil {
 		return false, err
 	}
-
-	log.Printf("check log file:\n--- '%s' ---\n%s\n---------\n", outputFile, out)
 
 	if out != "" {
 		log.Printf("Output: %s\n", out)
