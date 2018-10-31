@@ -26,6 +26,8 @@ var multiPartyEscrow string
 var organizationAddress string
 var agentAddress string
 
+var environmentIsSet = false
+
 func init() {
 	platformContractsDir = envSingnetRepos + "/platform-contracts"
 	exampleServiceDir = envSingnetRepos + "/example-service"
@@ -33,7 +35,11 @@ func init() {
 	snetConfigFile = envHome + "/.snet/config"
 }
 
-func ethereumNetworkIsRunningOnPort(port int) error {
+func ethereumNetworkIsRunningOnPort(port int) (err error) {
+
+	if environmentIsSet {
+		return
+	}
 
 	outputFile = logPath + "/ganache.log"
 	outputContainsStrings = []string{"Listening on 127.0.0.1:" + toString(port)}
@@ -46,15 +52,15 @@ func ethereumNetworkIsRunningOnPort(port int) error {
 		Args:       args,
 	}
 
-	err := runCommandAsync(command)
+	err = runCommandAsync(command)
 
 	if err != nil {
-		return err
+		return
 	}
 
 	exists, err := checkWithTimeout(5000, 500, checkFileContainsStrings)
 	if err != nil {
-		return err
+		return
 	}
 
 	if !exists {
@@ -63,12 +69,12 @@ func ethereumNetworkIsRunningOnPort(port int) error {
 
 	organizationAddress, err = getPropertyFromFile(outputFile, "(1)")
 	if err != nil {
-		return err
+		return
 	}
 
 	accountPrivateKey, err = getPropertyWithIndexFromFile(outputFile, "(2)", 1)
 	if err != nil {
-		return err
+		return
 	}
 
 	if len(accountPrivateKey) < 3 {
@@ -79,13 +85,17 @@ func ethereumNetworkIsRunningOnPort(port int) error {
 
 	identiyPrivateKey, err = getPropertyWithIndexFromFile(outputFile, "(0)", 1)
 	if err != nil {
-		return err
+		return
 	}
 
-	return nil
+	return
 }
 
-func contractsAreDeployedUsingTruffle() error {
+func contractsAreDeployedUsingTruffle() (err error) {
+
+	if environmentIsSet {
+		return
+	}
 
 	command := ExecCommand{
 		Command:   "./node_modules/.bin/truffle",
@@ -93,10 +103,10 @@ func contractsAreDeployedUsingTruffle() error {
 		Args:      []string{"compile"},
 	}
 
-	err := runCommand(command)
+	err = runCommand(command)
 
 	if err != nil {
-		return err
+		return
 	}
 
 	output := "migrate.out"
@@ -106,23 +116,27 @@ func contractsAreDeployedUsingTruffle() error {
 
 	registryAddress, err = getPropertyFromFile(output, "Registry:")
 	if err != nil {
-		return err
+		return
 	}
 
 	agentFactoryAddress, err = getPropertyFromFile(output, "AgentFactory:")
 	if err != nil {
-		return err
+		return
 	}
 
 	multiPartyEscrow, err = getPropertyFromFile(output, "MultiPartyEscrow:")
 	if err != nil {
-		return err
+		return
 	}
 
-	return err
+	return
 }
 
-func ipfsIsRunning(portAPI int, portGateway int) error {
+func ipfsIsRunning(portAPI int, portGateway int) (err error) {
+
+	if environmentIsSet {
+		return
+	}
 
 	env := []string{"IPFS_PATH=" + envGoPath + "/ipfs"}
 
@@ -132,17 +146,17 @@ func ipfsIsRunning(portAPI int, portGateway int) error {
 		Args:    []string{"init"},
 	}
 
-	err := runCommand(command)
+	err = runCommand(command)
 
 	if err != nil {
-		return err
+		return
 	}
 
 	command.Args = []string{"bootstrap", "rm", "--all"}
 	err = runCommand(command)
 
 	if err != nil {
-		return err
+		return
 	}
 
 	addressAPI := "/ip4/127.0.0.1/tcp/" + toString(portAPI)
@@ -150,7 +164,7 @@ func ipfsIsRunning(portAPI int, portGateway int) error {
 	err = runCommand(command)
 
 	if err != nil {
-		return err
+		return
 	}
 
 	addressGateway := "/ip4/0.0.0.0/tcp/" + toString(portGateway)
@@ -158,7 +172,7 @@ func ipfsIsRunning(portAPI int, portGateway int) error {
 	err = runCommand(command)
 
 	if err != nil {
-		return err
+		return
 	}
 
 	outputFile = logPath + "/ipfs.log"
@@ -167,7 +181,7 @@ func ipfsIsRunning(portAPI int, portGateway int) error {
 	err = runCommandAsync(command)
 
 	if err != nil {
-		return err
+		return
 	}
 
 	outputContainsStrings = []string{
@@ -178,7 +192,7 @@ func ipfsIsRunning(portAPI int, portGateway int) error {
 	exists, err := checkWithTimeout(5000, 500, checkFileContainsStrings)
 
 	if err != nil {
-		return err
+		return
 	}
 
 	if !exists {
@@ -188,32 +202,40 @@ func ipfsIsRunning(portAPI int, portGateway int) error {
 	return nil
 }
 
-func identityIsCreatedWithUserAndPrivateKey(user string, privateKey string) error {
+func identityIsCreatedWithUserAndPrivateKey(user string, privateKey string) (err error) {
+
+	if environmentIsSet {
+		return
+	}
 
 	command := ExecCommand{
 		Command: "snet",
 		Args:    []string{"identity", "create", user, "key", "--private-key", identiyPrivateKey},
 	}
-	err := runCommand(command)
+	err = runCommand(command)
 
 	if err != nil {
-		return err
+		return
 	}
 
 	command.Args = []string{"identity", "snet-user"}
 	return runCommand(command)
 }
 
-func snetIsConfiguredWithEthereumRPCEndpoint(endpointEthereumRPC int) error {
+func snetIsConfiguredWithEthereumRPCEndpoint(endpointEthereumRPC int) (err error) {
+
+	if environmentIsSet {
+		return
+	}
 
 	config := `
 [network.local]
 default_eth_rpc_endpoint = http://localhost:` + toString(endpointEthereumRPC)
 
-	err := appendToFile(snetConfigFile, config)
+	err = appendToFile(snetConfigFile, config)
 
 	if err != nil {
-		return err
+		return
 	}
 
 	command := ExecCommand{
@@ -223,7 +245,7 @@ default_eth_rpc_endpoint = http://localhost:` + toString(endpointEthereumRPC)
 	err = runCommand(command)
 
 	if err != nil {
-		return err
+		return
 	}
 
 	outputFile = snetConfigFile
@@ -237,17 +259,21 @@ default_eth_rpc_endpoint = http://localhost:` + toString(endpointEthereumRPC)
 	return e
 }
 
-func snetIsConfiguredWithIPFSEndpoint(endpointIPFS int) error {
+func snetIsConfiguredWithIPFSEndpoint(endpointIPFS int) (err error) {
+
+	if environmentIsSet {
+		return
+	}
 
 	command := ExecCommand{
 		Command: "sed",
 		Args:    []string{"-ie", "/ipfs/,+2d", snetConfigFile},
 	}
 
-	err := runCommand(command)
+	err = runCommand(command)
 
 	if err != nil {
-		return err
+		return
 	}
 
 	config := `
@@ -257,7 +283,11 @@ default_ipfs_endpoint = http://localhost:` + toString(endpointIPFS)
 	return appendToFile(snetConfigFile, config)
 }
 
-func organizationIsAdded(table *gherkin.DataTable) error {
+func organizationIsAdded(table *gherkin.DataTable) (err error) {
+
+	if environmentIsSet {
+		return
+	}
 
 	organization := getTableValue(table, "organization")
 
@@ -275,7 +305,11 @@ func organizationIsAdded(table *gherkin.DataTable) error {
 		Args:    args,
 	}
 
-	return runCommand(command)
+	err = runCommand(command)
+
+	environmentIsSet = true
+
+	return
 }
 
 func FeatureContext(s *godog.Suite) {

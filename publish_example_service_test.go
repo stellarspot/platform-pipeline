@@ -10,12 +10,13 @@ import (
 )
 
 func exampleserviceIsRegistered(table *gherkin.DataTable) error {
-	return serviceIsRegistered(table)
+	return serviceIsRegistered(table, exampleServiceDir)
 }
 
-func serviceIsRegistered(table *gherkin.DataTable) error {
+func serviceIsRegistered(table *gherkin.DataTable, dir string) error {
 
 	name := getTableValue(table, "name")
+	serviceSpec := getTableValue(table, "service_spec")
 	price := getTableValue(table, "price")
 	endpoint := getTableValue(table, "endpoint")
 	tags := getTableValue(table, "tags")
@@ -23,8 +24,8 @@ func serviceIsRegistered(table *gherkin.DataTable) error {
 
 	command := ExecCommand{
 		Command:   "snet",
-		Directory: exampleServiceDir,
-		Input:     []string{"", "", name, "", price, endpoint, tags, description},
+		Directory: dir,
+		Input:     []string{"", serviceSpec, name, "", price, endpoint, tags, description},
 		Args:      []string{"service", "init"},
 	}
 
@@ -32,10 +33,10 @@ func serviceIsRegistered(table *gherkin.DataTable) error {
 }
 
 func exampleserviceIsPublishedToNetwork() error {
-	return serviceIsPublishedToNetwork("./service.json")
+	return serviceIsPublishedToNetwork(exampleServiceDir, "./service.json")
 }
 
-func serviceIsPublishedToNetwork(serviceFile string) error {
+func serviceIsPublishedToNetwork(dir string, serviceFile string) error {
 
 	args := []string{
 		"service", "publish", "local",
@@ -47,7 +48,7 @@ func serviceIsPublishedToNetwork(serviceFile string) error {
 
 	command := ExecCommand{
 		Command:   "snet",
-		Directory: exampleServiceDir,
+		Directory: dir,
 		Args:      args,
 	}
 
@@ -57,7 +58,7 @@ func serviceIsPublishedToNetwork(serviceFile string) error {
 	}
 
 	agentAddress, err = getPropertyFromFile(
-		exampleServiceDir+"/"+serviceFile,
+		dir+"/"+serviceFile,
 		"\"agentAddress\":",
 	)
 

@@ -13,12 +13,12 @@ const (
 )
 
 func dnnmodelServiceIsRegistered(table *gherkin.DataTable) (err error) {
-	err = serviceIsRegistered(table)
+	err = serviceIsRegistered(table, dnnModelServicesDir)
 	return
 }
 
 func dnnmodelServiceIsPublishedToNetwork() (err error) {
-	err = serviceIsPublishedToNetwork("./service.json")
+	err = serviceIsPublishedToNetwork(dnnModelServicesDir, "./service.json")
 	return
 }
 
@@ -134,6 +134,17 @@ func dnnmodelServiceSnetdaemonConfigFileIsCreated(table *gherkin.DataTable) (err
 			"output": {
 			"type": "stdout"
 			}
+		},
+		"payment_channel_storage_type": "etcd",
+		"payment_channel_storage_client": {
+			"endpoints": ["http://127.0.0.1:2479"]
+		},
+		"payment_channel_storage_server": {
+			"host" : "127.0.0.1",
+			"client_port": 2479,
+			"peer_port": 2480,
+			"token": "unique-token-dnn",
+			"cluster": "storage-1=http://127.0.0.1:2480"
 		}
 	}
 	`
