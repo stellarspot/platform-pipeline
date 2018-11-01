@@ -56,8 +56,12 @@ func exampleserviceIsRunWithSnetdaemon(table *gherkin.DataTable) error {
 
 	linkFile(envSingnetRepos+"/snet-daemon/build/snetd-linux-amd64", exampleServiceDir+"/snetd-linux-amd64")
 
-	outputFile = logPath + "/example-service.log"
-	outputContainsStrings = []string{}
+	outputFile := logPath + "/example-service.log"
+
+	fileContains = checkFileContains{
+		output:  outputFile,
+		strings: []string{},
+	}
 
 	command := ExecCommand{
 		Command:    exampleServiceDir + "/scripts/run-snet-service",
