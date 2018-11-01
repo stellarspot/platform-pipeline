@@ -97,13 +97,26 @@ jobs:
           export PATH=$PATH:$GOPATH/bin
           cd $SINGNET_REPOS
           git clone https://github.com/singnet/dnn-model-services.git
-    - checkout
     - run:
         name: Run integration tests
         command: |
+          cd $SINGNET_REPOS
+          git clone https://github.com/stellarspot/platform-pipeline.git
+          cd platform-pipeline
+          git checkout feature/run-dnn-model-services-treasurer-server
           export PATH=$PATH:$GOPATH/bin
           mkdir $GOPATH/log
           go get github.com/DATA-DOG/godog/cmd/godog
           # Disable TensorFlow warnings wich pollute example-service log file
           export TF_CPP_MIN_LOG_LEVEL=2
           godog
+#    - checkout
+#    - run:
+#        name: Run integration tests
+#        command: |
+#          export PATH=$PATH:$GOPATH/bin
+#          mkdir $GOPATH/log
+#          go get github.com/DATA-DOG/godog/cmd/godog
+#          # Disable TensorFlow warnings wich pollute example-service log file
+#          export TF_CPP_MIN_LOG_LEVEL=2
+#          godog
