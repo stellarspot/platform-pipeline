@@ -226,9 +226,13 @@ type checkFileContains struct {
 	output     string
 }
 
-var fileContains checkFileContains
+func checkFileContainsStringsFunc(fileContains checkFileContains) checkWithTimeoutType {
+	return func() (bool, error) {
+		return checkFileContainsStrings(fileContains)
+	}
+}
 
-func checkFileContainsStrings() (bool, error) {
+func checkFileContainsStrings(fileContains checkFileContains) (bool, error) {
 
 	if len(fileContains.skipErrors) > 0 {
 		skipErrors := strings.Join(fileContains.skipErrors, ",")
@@ -278,7 +282,7 @@ func contains(str string, substr string, ignoreCase bool) bool {
 	return strings.Contains(str, substr)
 }
 
-func fileContainsError(ok bool, e error) (err error) {
+func fileContainsError(fileContains checkFileContains, ok bool, e error) (err error) {
 
 	if e != nil {
 		err = e

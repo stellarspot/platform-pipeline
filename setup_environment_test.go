@@ -44,7 +44,7 @@ func ethereumNetworkIsRunningOnPort(port int) (err error) {
 
 	outputFile := logPath + "/ganache.log"
 
-	fileContains = checkFileContains{
+	fileContains := checkFileContains{
 		output:  outputFile,
 		strings: []string{"Listening on 127.0.0.1:" + toString(port)},
 	}
@@ -63,7 +63,7 @@ func ethereumNetworkIsRunningOnPort(port int) (err error) {
 		return
 	}
 
-	exists, err := checkWithTimeout(5000, 500, checkFileContainsStrings)
+	exists, err := checkWithTimeout(5000, 500, checkFileContainsStringsFunc(fileContains))
 	if err != nil {
 		return
 	}
@@ -215,7 +215,7 @@ func ipfsIsRunning(portAPI int, portGateway int) (err error) {
 		return
 	}
 
-	fileContains = checkFileContains{
+	fileContains := checkFileContains{
 		output: outputFile,
 		strings: []string{
 			"Daemon is ready",
@@ -224,7 +224,7 @@ func ipfsIsRunning(portAPI int, portGateway int) (err error) {
 		},
 	}
 
-	exists, err := checkWithTimeout(5000, 500, checkFileContainsStrings)
+	exists, err := checkWithTimeout(5000, 500, checkFileContainsStringsFunc(fileContains))
 
 	if err != nil {
 		return
@@ -283,12 +283,12 @@ default_eth_rpc_endpoint = http://localhost:` + toString(endpointEthereumRPC)
 		return
 	}
 
-	fileContains = checkFileContains{
+	fileContains := checkFileContains{
 		output:  snetConfigFile,
 		strings: []string{"session"},
 	}
 
-	exists, e := checkWithTimeout(5000, 500, checkFileContainsStrings)
+	exists, e := checkWithTimeout(5000, 500, checkFileContainsStringsFunc(fileContains))
 
 	if !exists {
 		return errors.New("snet config file is not created: " + snetConfigFile)

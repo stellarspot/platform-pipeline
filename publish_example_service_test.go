@@ -58,7 +58,7 @@ func exampleserviceIsRunWithSnetdaemon(table *gherkin.DataTable) error {
 
 	outputFile := logPath + "/example-service.log"
 
-	fileContains = checkFileContains{
+	fileContains := checkFileContains{
 		output:  outputFile,
 		strings: []string{},
 	}
@@ -75,7 +75,7 @@ func exampleserviceIsRunWithSnetdaemon(table *gherkin.DataTable) error {
 		return err
 	}
 
-	_, err = checkWithTimeout(5000, 500, checkFileContainsStrings)
+	_, err = checkWithTimeout(5000, 500, checkFileContainsStringsFunc(fileContains))
 
 	if err != nil {
 		return err

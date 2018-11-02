@@ -129,7 +129,7 @@ func dnnmodelServiceSnetdaemonConfigFileIsCreated(table *gherkin.DataTable) (err
 		"log": {
 			"level": "debug",
 			"output": {
-			"type": "stdout"
+				"type": "stdout"
 			}
 		},
 		"payment_channel_storage_type": "etcd",
@@ -185,7 +185,7 @@ func dnnmodelServiceIsRunning() (err error) {
 		return
 	}
 
-	fileContains = checkFileContains{
+	fileContains := checkFileContains{
 		output:  logPath + "/dnn-model-services-" + serviceName + ".log",
 		strings: []string{"multi_party_escrow_contract_address"},
 	}
@@ -203,7 +203,7 @@ func dnnmodelServiceIsRunning() (err error) {
 		return err
 	}
 
-	_, err = checkWithTimeout(5000, 500, checkFileContainsStrings)
+	_, err = checkWithTimeout(5000, 500, checkFileContainsStringsFunc(fileContains))
 
 	return
 }
@@ -315,7 +315,7 @@ func dnnmodelMakeACallUsingStatelessLogic() (err error) {
 
 	outputFile := dnnModelServicesDir + "/output.txt"
 
-	fileContains = checkFileContains{
+	fileContains := checkFileContains{
 		output:     outputFile,
 		strings:    []string{organizationAddress, "420000"},
 		ignoreCase: true,
@@ -333,24 +333,24 @@ func dnnmodelMakeACallUsingStatelessLogic() (err error) {
 
 	err = runCommand(command)
 
-	ok, err := checkFileContainsStrings()
-	err = fileContainsError(ok, err)
+	ok, err := checkFileContainsStrings(fileContains)
+	err = fileContainsError(fileContains, ok, err)
 
 	if err != nil {
 		return
 	}
 
-	command = ExecCommand{
-		Command:   "snet",
-		Directory: dnnModelServicesDir,
-		Args: []string{
-			"mpe-client",
-			"call_server", multiPartyEscrow,
-			"0", "10", "localhost:8090", `"Addition"`, "add", `'{"a":10,"b":32}`,
-		},
-	}
+	// command = ExecCommand{
+	// 	Command:   "snet",
+	// 	Directory: dnnModelServicesDir,
+	// 	Args: []string{
+	// 		"mpe-client",
+	// 		"call_server", multiPartyEscrow,
+	// 		"0", "10", "localhost:8090", `"Addition"`, "add", "'{\"a\":10,\"b\":32}'",
+	// 	},
+	// }
 
-	err = runCommand(command)
+	// err = runCommand(command)
 
 	return
 }
@@ -382,11 +382,14 @@ func dnnmodelClaimChannelByTreasurerServer(table *gherkin.DataTable) (err error)
 				"type": "stdout"
 			}
 		},
-	   "payment_channel_storage_server": {
+		"payment_channel_storage_type": "etcd",
+		"payment_channel_storage_client": {
+			"endpoints": ["http://127.0.0.1:2479"]
+		},
+		"payment_channel_storage_server": {
 			"enabled": false
-	   }
-	}
-	`
+		}
+	}`
 
 	snetdConfig := fmt.Sprintf(
 		snetdConfigTemplate,
@@ -427,14 +430,14 @@ func dnnmodelClaimChannelByTreasurerServer(table *gherkin.DataTable) (err error)
 		return
 	}
 
-	fileContains = checkFileContains{
+	fileContains := checkFileContains{
 		output:     output,
 		strings:    []string{snetIdentityAddress, organizationAddress, "0, 420000, 0, 1220"},
 		ignoreCase: true,
 	}
 
-	ok, err := checkFileContainsStrings()
-	err = fileContainsError(ok, err)
+	ok, err := checkFileContainsStrings(fileContains)
+	err = fileContainsError(fileContains, ok, err)
 
 	if err != nil {
 		return
@@ -472,20 +475,19 @@ func dnnmodelClaimChannelByTreasurerServer(table *gherkin.DataTable) (err error)
 	}
 
 	// TBD: check right amount and nonce in the output
-	/*
-		fileContains = checkFileContains{
-			output:     output,
-			strings:    []string{snetIdentityAddress, organizationAddress, "0, 420000, 0, 1220"},
-			ignoreCase: true,
-		}
 
-		ok, err = checkFileContainsStrings()
-		err = fileContainsError(ok, err)
+	fileContains = checkFileContains{
+		output:     output,
+		strings:    []string{snetIdentityAddress, organizationAddress, "0, 420000, 0, 1220"},
+		ignoreCase: true,
+	}
 
-		if err != nil {
-			return
-		}
-	*/
+	ok, err = checkFileContainsStrings(fileContains)
+	err = fileContainsError(fileContains, ok, err)
+
+	if err != nil {
+		return
+	}
 
 	return
 }
