@@ -49,6 +49,7 @@ func dnnmodelMpeServiceIsRegistered(table *gherkin.DataTable) (err error) {
 	}
 
 	modelIpfsHash, err := readFile(output)
+	log.Println("modelIpfsHash: ", modelIpfsHash)
 
 	if err != nil {
 		return
@@ -272,7 +273,7 @@ func dnnmodelOpenThePaymentChannel() (err error) {
 		return
 	}
 
-	expiration += 1200
+	expiration += 12000
 
 	command = ExecCommand{
 		Command:   "snet",
@@ -384,6 +385,8 @@ func dnnmodelClaimChannelByTreasurerServer(table *gherkin.DataTable) (err error)
 		},
 		"payment_channel_storage_type": "etcd",
 		"payment_channel_storage_client": {
+			"connection_timeout": "5s",
+			"request_timeout": "3s",
 			"endpoints": ["http://127.0.0.1:2479"]
 		},
 		"payment_channel_storage_server": {
@@ -432,7 +435,7 @@ func dnnmodelClaimChannelByTreasurerServer(table *gherkin.DataTable) (err error)
 
 	fileContains := checkFileContains{
 		output:     output,
-		strings:    []string{snetIdentityAddress, organizationAddress, "0, 420000, 0, 1220"},
+		strings:    []string{snetIdentityAddress, organizationAddress, "0, 420000, 0, 12020"},
 		ignoreCase: true,
 	}
 
