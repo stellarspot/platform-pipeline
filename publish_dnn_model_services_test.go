@@ -341,17 +341,23 @@ func dnnmodelMakeACallUsingStatelessLogic() (err error) {
 		return
 	}
 
-	// command = ExecCommand{
-	// 	Command:   "snet",
-	// 	Directory: dnnModelServicesDir,
-	// 	Args: []string{
-	// 		"mpe-client",
-	// 		"call_server", multiPartyEscrow,
-	// 		"0", "10", "localhost:8090", `"Addition"`, "add", "'{\"a\":10,\"b\":32}'",
-	// 	},
-	// }
+	for i := 0; i < 3; i++ {
+		command = ExecCommand{
+			Command:   "snet",
+			Directory: dnnModelServicesDir,
+			Args: []string{
+				"mpe-client",
+				"call_server", multiPartyEscrow,
+				"0", "10", "localhost:8090", "Addition", "add", "{\"a\":10,\"b\":32}",
+			},
+		}
 
-	// err = runCommand(command)
+		err = runCommand(command)
+		if err != nil {
+			return
+		}
+
+	}
 
 	return
 }
@@ -435,7 +441,7 @@ func dnnmodelClaimChannelByTreasurerServer(table *gherkin.DataTable) (err error)
 
 	fileContains := checkFileContains{
 		output:     output,
-		strings:    []string{snetIdentityAddress, organizationAddress, "0, 420000, 0, 12020"},
+		strings:    []string{snetIdentityAddress, organizationAddress, "420000", "12020"},
 		ignoreCase: true,
 	}
 
@@ -477,11 +483,9 @@ func dnnmodelClaimChannelByTreasurerServer(table *gherkin.DataTable) (err error)
 		return
 	}
 
-	// TBD: check right amount and nonce in the output
-
 	fileContains = checkFileContains{
 		output:     output,
-		strings:    []string{snetIdentityAddress, organizationAddress, "0, 420000, 0, 1220"},
+		strings:    []string{snetIdentityAddress, organizationAddress, "419970", "12020"},
 		ignoreCase: true,
 	}
 
